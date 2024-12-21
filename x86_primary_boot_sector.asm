@@ -1,5 +1,4 @@
-; Infinite loop (e9 fd ff)
-
+; Test tty works by printing Hello World
 mov ah, 0x0e ; tty mode
 mov al, 'H'
 int 0x10
@@ -25,9 +24,10 @@ int 0x10
 mov al, '!'
 int 0x10
 
+; Infinite loop
 jmp $ ; jump to current address = infinite loop
 
-; Write 510 bytes of blank memory
+; Fill any empty memory locations with the value '0' and save 2 bytes for the magic number that the BIOS looks for
 times 510-($-$$) db 0
 
 ; Write the magic number into the remaining 2 bytes of memory we have left
