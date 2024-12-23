@@ -1,34 +1,50 @@
-; Test tty works by printing Hello World
-mov ah, 0x0e ; tty mode
-mov al, 'H'
-int 0x10
-mov al, 'e'
-int 0x10
-mov al, 'l'
-int 0x10
-int 0x10 ; 'l' is still on al, remember?
-mov al, 'o'
-int 0x10
-mov al, ''
-int 0x10
-mov al, 'W'
-int 0x10
-mov al, 'o'
-int 0x10
-mov al, 'r'
-int 0x10
-mov al, 'l'
-int 0x10
-mov al, 'd'
-int 0x10
-mov al, '!'
-int 0x10
+[org 0x7c00]
+mov bx, HELLO
+call print
+call print_nl
 
-; Infinite loop
-jmp $ ; jump to current address = infinite loop
+mov bx, GOODBYE
+call print
+mov bx, 0 ; Clear bx register so we don't get any unexpected output
+call print_nl
 
-; Fill any empty memory locations with the value '0' and save 2 bytes for the magic number that the BIOS looks for
+HELLO:
+    db 'Hello World!', 0
+
+GOODBYE:
+    db 'Goodbye!', 0
+
+print:
+    pusha
+    jmp print_logic
+
+print_logic:
+    mov al, [bx]
+    cmp al, 0
+    je cleanup
+
+    mov ah, 0x0e
+    int 0x10
+    add bx, 1
+    jmp print_logic
+
+cleanup:
+    popa
+    ret
+
+print_nl:
+    pusha
+    mov ah, 0x0e
+    mov al, 0x0a
+    int 0x10
+    mov al, 0x0d
+    int 0x10
+
+    popa
+    ret
+
+jmp $ ; infinite loop
+
+; zero padding and magic bios number
 times 510-($-$$) db 0
-
-; Write the magic number into the remaining 2 bytes of memory we have left
 dw 0xaa55
