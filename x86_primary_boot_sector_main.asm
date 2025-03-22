@@ -6,7 +6,6 @@ call print_nl
 
 mov bx, GOODBYE
 call print
-mov bx, 0 ; Clear bx register so we don't get any unexpected output
 call print_nl
 
 mov dx, 0x12fe
